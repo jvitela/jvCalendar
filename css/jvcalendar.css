@@ -1,0 +1,215 @@
+body {
+  font-family: 'Gafata', sans-serif;
+  background: #414141;
+}
+
+h1 {
+  font-weight: normal;
+  font-size:   5em;
+  margin: 0;
+}
+
+#Title {
+  background: #52ACCC;
+  color:      #ffffff;
+  text-align: center;
+  padding:    3em 1em;
+  text-shadow: 4px 4px 2px rgba(255, 255, 255, 0.3);
+}
+
+#MainDemo {
+  background: #A0D468;
+  color:      #ffffff;
+  text-align: center;
+  padding:    3em 1em;
+}
+
+#MainDemo .calendar {
+  width:         30%;
+  height:        28em;
+  margin:        0 auto;
+  margin-bottom: 1em;
+  border:        none;
+  color:         #f6ffd5;
+  background:    #A0D468;
+}
+
+#MainDemo .calendar-header {
+  font-size:   2.5em;
+  background:  #97CE7F;
+  height:      2em;
+  line-height: 1.8em;
+  margin:      0;
+}
+
+#MainDemo .calendar-header > .btn-next-month,
+#MainDemo .calendar-header > .btn-prev-month {
+  background:  #97CE7F;
+  color:       #f6ffd5;
+  border:      none;
+  line-height: 1.8em;
+}
+
+#MainDemo .calendar-header > .btn-prev-month {
+  margin-left: 1em;
+  float: left;
+}
+
+#MainDemo .calendar-header > .btn-next-month {
+  margin-right: 1em;
+  float: right;
+}
+
+#MainDemo .calendar > table {
+  width: 100%;
+  font-size: 1.5em;
+  border-collapse: collapse;
+  border-spacing: 0px;
+}
+
+#MainDemo .calendar > table > thead th {
+  color:      #bec8b7;
+  background: #93ac93;
+  padding:    0.5em;
+}
+
+#MainDemo .calendar > table .other-month,
+#MainDemo .calendar > table > tbody th {
+  color: #93ac93;
+}
+
+#MainDemo .calendar > table .day {
+  padding: 0.5em;
+  cursor:  pointer;
+}
+
+#MainDemo .calendar > table .day.selected {
+  cursor: pointer;
+  background: #97CE7F;
+}
+
+#MainDemo .calendar > table .day:hover {
+  color:      #FFF; 
+}
+
+#Today {
+  background: #97CE7F;
+  color:      #fff;
+  padding:    0.5em;
+  border:     1px solid #f6ffd5;
+}
+
+#Selection {
+  border:     1px solid #f6ffd5;
+  background: #97CE7F;
+  color:      #fff;
+  width:      25em;
+  height:     2em;
+}
+
+
+/* ==========================================================================
+   Media Queries
+   ========================================================================== */
+
+@media only screen and (min-width: 35em) {
+
+}
+
+@media print,
+       (-o-min-device-pixel-ratio: 5/4),
+       (-webkit-min-device-pixel-ratio: 1.25),
+       (min-resolution: 120dpi) {
+
+}
+
+.hidden {
+    display: none !important;
+    visibility: hidden;
+}
+
+.visuallyhidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+
+.invisible {
+    visibility: hidden;
+}
+
+/* ==========================================================================
+   Print styles
+   ========================================================================== */
+
+@media print {
+    * {
+        background: transparent !important;
+        color: #000 !important; /* Black prints faster: h5bp.com/s */
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    a,
+    a:visited {
+        text-decoration: underline;
+    }
+
+    a[href]:after {
+        content: " (" attr(href) ")";
+    }
+
+    abbr[title]:after {
+        content: " (" attr(title) ")";
+    }
+
+    /*
+     * Don't show links for images, or javascript/internal links
+     */
+
+    .ir a:after,
+    a[href^="javascript:"]:after,
+    a[href^="#"]:after {
+        content: "";
+    }
+
+    pre,
+    blockquote {
+        border: 1px solid #999;
+        page-break-inside: avoid;
+    }
+
+    thead {
+        display: table-header-group; /* h5bp.com/t */
+    }
+
+    tr,
+    img {
+        page-break-inside: avoid;
+    }
+
+    img {
+        max-width: 100% !important;
+    }
+
+    @page {
+        margin: 0.5cm;
+    }
+
+    p,
+    h2,
+    h3 {
+        orphans: 3;
+        widows: 3;
+    }
+
+    h2,
+    h3 {
+        page-break-after: avoid;
+    }
+}
