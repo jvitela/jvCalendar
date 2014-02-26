@@ -52,13 +52,12 @@
 	CustomEvent.prototype = window.CustomEvent.prototype;
 	window.CustomEvent = CustomEvent;
   }
-  
+
   /**
    * Constructor
    */
   function CalendarView(opts) {
-    var key,
-      Me;
+    var key, Me = this;
     this.options = opts || {};
     for (key in this.defaults) {
       if (this.defaults.hasOwnProperty(key) && !this.options.hasOwnProperty(key)) {
@@ -69,7 +68,6 @@
     this.model = this.options.model || new CalendarModel();
     this.el    = this.options.el    || document.createElement("div");
 
-    Me = this;
     // Delegate events
     this.el.addEventListener("click", function (e) {
 	  var target = e.target;
