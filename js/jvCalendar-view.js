@@ -39,6 +39,21 @@
   "use strict";
 
   /**
+   * Polyfill for Internet Explorer 9 and 10 
+   * https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent
+   */
+  if (typeof CustomEvent !== "function") {
+	var CustomEvent = function CustomEvent ( event, params ) {
+	  var evt = document.createEvent( 'CustomEvent' );
+	  params = params || { bubbles: false, cancelable: false, detail: undefined };
+	  evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
+	  return evt;
+	};
+	CustomEvent.prototype = window.CustomEvent.prototype;
+	window.CustomEvent = CustomEvent;
+  }
+  
+  /**
    * Constructor
    */
   function CalendarView(opts) {
@@ -57,15 +72,19 @@
     Me = this;
     // Delegate events
     this.el.addEventListener("click", function (e) {
-      if (/btn-next-month/.test(e.target.className)) {
-        return Me.onNextMonth(e);
-      }
-      if (/btn-prev-month/.test(e.target.className)) {
-        return Me.onPrevMonth(e);
-      }
-      if (/day/.test(e.target.className)) {
-        return Me.onSelectDay(e);
-      }
+	  var target = e.target;
+	  while (target && target !== Me.el) {
+        if (/btn-next-month/.test(target.className)) {
+		  return Me.onNextMonth(e);
+		}
+		if (/btn-prev-month/.test(target.className)) {
+		  return Me.onPrevMonth(e);
+		}
+		if (/day/.test(target.className)) {
+		  return Me.onSelectDay(e);
+	    }
+		target = target.parentNode;
+	  }
       return false;
     });
   }
@@ -118,15 +137,14 @@
      */
     onSelectDay: function (event) {
       var date, evt;
-
       event.preventDefault();
       if (/disabled/.test(event.target.className)) {
         return false;
       }
       date = new Date(+event.target.getAttribute("data-value"));
       this.model.option("selected", date);
-      // Always trigger an event from the view
-      evt  = new CustomEvent("dayselected", {"date": date, "model": this.model});
+      // Trigger a custom event
+      evt = new CustomEvent("dayselected", {"date": date, "model": this.model});
       evt.date  = date;
       evt.model = this.model;
       this.el.dispatchEvent(evt);

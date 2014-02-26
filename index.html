@@ -31,23 +31,15 @@
   
   <script type="text/Mustache" id="CalendarTemplate">
     <h2 class="calendar-header">
-     {{#prev}}
-     <button class="btn-prev-month"> <i class="fa fa-chevron-left"></i> </button>
-     {{/prev}}
+      <button class="btn-prev-month" {{^prev}}disabled="disabled"{{/prev}}>
+	    <i class="fa fa-chevron-left"></i>
+	  </button>
+
+      <span>{{month}}&nbsp;{{year}}</span>
      
-     {{^prev}}
-     <span class="btn-prev-month"> <i class="fa fa-chevron-left"></i> </span>
-     {{/prev}}
-     
-     <span>{{month}} &nbsp; {{year}}</span>
-     
-     {{#next}}
-     <button class="btn-next-month"> <i class="fa fa-chevron-right"></i> </button>
-     {{/next}}
-     
-     {{^next}}
-     <span class="btn-next-month"> <i class="fa fa-chevron-right"></i> </span>
-     {{/next}}
+      <button class="btn-next-month" {{^next}}disabled="disabled"{{/next}}> 
+	    <i class="fa fa-chevron-right"></i>
+	  </button>
     </h2>
     <table>
     <thead>

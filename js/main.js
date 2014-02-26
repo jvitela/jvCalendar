@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     var calendar = new CalendarView({
       el:       document.getElementById("Calendar"),
-      model:    new CalendarModel({ numWeeks : 6 }),
+      //model:    new CalendarModel({ numWeeks : 6 }),
       template: document.getElementById("CalendarTemplate").innerHTML
     });
 
