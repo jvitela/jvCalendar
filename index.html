@@ -33,15 +33,21 @@
 
   <script type="text/Mustache" id="CalendarTemplate">
     <h2>
-      <button class="btn-prev-month" {{^prev}}disabled="disabled"{{/prev}} data-month="-1">
-	    <i class="fa fa-chevron-left"></i>
-	  </button>
-
-      <span>{{month}}&nbsp;{{year}}</span>
-
-      <button class="btn-next-month" {{^next}}disabled="disabled"{{/next}} data-month="+1">
-	    <i class="fa fa-chevron-right"></i>
-	  </button>
+      <button class="btn" {{^prev}}disabled="disabled"{{/prev}} data-month="-1">
+       <i class="fa fa-chevron-left"></i>
+      </button>
+      <span class="month">{{month}}</span>
+      <button class="btn" {{^next}}disabled="disabled"{{/next}} data-month="+1">
+       <i class="fa fa-chevron-right"></i>
+      </button>
+      
+      <button class="btn" {{^prev}}disabled="disabled"{{/prev}} data-year="-1">
+       <i class="fa fa-chevron-left"></i>
+      </button>
+      <span class="year">{{year}}</span>
+      <button class="btn" {{^next}}disabled="disabled"{{/next}} data-year="+1">
+       <i class="fa fa-chevron-right"></i>
+      </button>
     </h2>
     <table>
     <thead>
@@ -60,9 +66,9 @@
           {{/otherMonth}}
 
           {{^otherMonth}}
-          <td class="day {{#disabled}}disabled{{/disabled}}" data-timestamp="{{timestamp}}">
-          {{#selected}} <b class="label label-info">{{day}}</b> {{/selected}}
-          {{^selected}} {{day}} {{/selected}}
+          <td class="day {{#disabled}}disabled{{/disabled}} {{#selected}}selected{{/selected}}" 
+              data-timestamp="{{timestamp}}">
+          {{day}}
           </td>
           {{/otherMonth}}
         {{/days}}

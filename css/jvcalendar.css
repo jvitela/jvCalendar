@@ -41,23 +41,22 @@ h1 {
   line-height: 1.8em;
   margin:      0;
 }
-
-#MainDemo .calendar > h2 > .btn-next-month,
-#MainDemo .calendar > h2 > .btn-prev-month {
+#MainDemo .calendar > h2 > .month {
+  display: inline-block;
+  *display: inline;
+  width: 5em;
+}
+#MainDemo .calendar > h2 > .year {
+  display: inline-block;
+  *display: inline;
+  width: 2em;
+}
+#MainDemo .calendar > h2 > .btn {
   background:  #97CE7F;
   color:       #f6ffd5;
   border:      none;
   line-height: 1.8em;
-}
-
-#MainDemo .calendar > h2 > .btn-prev-month {
-  margin-left: 1em;
-  float: left;
-}
-
-#MainDemo .calendar > h2 > .btn-next-month {
-  margin-right: 1em;
-  float: right;
+  font-size:   0.8em;
 }
 
 #MainDemo .calendar > table {
@@ -84,8 +83,9 @@ h1 {
 }
 
 #MainDemo .calendar > table .day.selected {
-  cursor: pointer;
-  background: #97CE7F;
+  font-weight: bold;
+  cursor:      pointer;
+  background:  #97CE7F;
 }
 
 #MainDemo .calendar > table .day:hover {
@@ -126,21 +126,23 @@ h1 {
   	min-width: 20em;
   }
   h1  {
-	font-size: 3em;
+	 font-size: 3em;
   }
   #Today,
   #Selection,
   #MainDemo .calendar-actions {
     width: 100%;
-	margin-bottom: 0.5em;
+	  margin-bottom: 0.5em;
   }
   #MainDemo .calendar {
     width:  100%;
-	height: 17em;
+	  height: 21em;
   }
-  #MainDemo .calendar > h2,
+  #MainDemo .calendar > h2 {
+    font-size: 1.5em;
+  }
   #MainDemo .calendar table {
-	font-size: 1em;
+	 font-size: 1.2em;
   }
 }
 

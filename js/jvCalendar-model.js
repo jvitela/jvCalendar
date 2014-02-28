@@ -93,6 +93,48 @@
     },
 
     /**
+     * Move cursor to next {num} years
+     * @param num number The number of months to move
+     */
+    moveYear: function (num) {
+      if (num > 0 && !this.canNextYear(num)) {
+        return false;
+      }
+      if (num < 0 && !this.canPrevYear(num)) {
+        return false;
+      }
+
+      // go to the beginning of next month
+      this._cursor = new Date(this._cursor.getFullYear() + num, this._cursor.getMonth(), 1);
+      return true;
+    },
+
+    /**
+     *  Verify if we can go to prev year
+     */
+    canPrevYear: function (num) {
+      if (!(this._minDate instanceof Date)) {
+        return true;
+      }
+      // go to end of previous month, which is one minute back from beginning of current month
+      var cursor  = new Date(this._cursor.getFullYear() - num + 1, this._cursor.getMonth(), 1, 0, -1);
+      return (cursor >= this._minDate);
+    },
+
+    /**
+     *  Verify if we can go to next year
+     */
+    canNextYear: function (num) {
+      if (!(this._maxDate instanceof Date)) {
+        return true;
+      }
+      // go to the beginning of next month
+      var cursor = new Date(this._cursor.getFullYear() + num, this._cursor.getMonth(), 1);
+      // Check if a max date is set
+      return (cursor <= this._maxDate);
+    },
+
+    /**
      * set/get option value
      */
     option: function (name, value) {
