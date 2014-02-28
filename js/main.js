@@ -17,17 +17,17 @@ document.addEventListener("DOMContentLoaded", function() {
       template: document.getElementById("CalendarTemplate").innerHTML
     });
 
-    calendar.el.addEventListener("dayselected",function( event) {
-      document.getElementById("Selection").value = event.date.toString();
+    calendar.el.addEventListener("dateselected",function( event) {
+      document.getElementById("Selection").value = event.detail.date.toString();
     });
 
     calendar.render();
-    
+
     document.getElementById("Today").addEventListener("click", function() {
       var today = new Date();
       calendar.model.option("selected", today);
       document.getElementById("Selection").value = today.toString();
       calendar.render();
-    });  
+    });
 });
 

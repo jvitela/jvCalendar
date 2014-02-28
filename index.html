@@ -16,13 +16,13 @@
   <script src="js/vendor/mustache.js" type="text/javascript"></script>
   <script src="js/jvCalendar-model.js"  type="text/javascript"></script>
   <script src="js/jvCalendar-view.js"   type="text/javascript"></script>
-  <script src="js/main.js"   type="text/javascript"></script>  
+  <script src="js/main.js"   type="text/javascript"></script>
 </head>
 <body>
   <section id="Title">
-    <h1>JV Calendar <i class="fa fa-calendar"></i></h1>
+   <h1>JV Calendar <i class="fa fa-calendar"></i></h1>
   </section>
-  
+
   <section id="MainDemo">
     <div class="calendar" id="Calendar"></div>
     <div class="calendar-actions">
@@ -30,16 +30,16 @@
       <button id="Today" type="button">Today</button>
     </div>
   </section>
-  
+
   <script type="text/Mustache" id="CalendarTemplate">
-    <h2 class="calendar-header">
-      <button class="btn-prev-month" {{^prev}}disabled="disabled"{{/prev}}>
+    <h2>
+      <button class="btn-prev-month" {{^prev}}disabled="disabled"{{/prev}} data-month="-1">
 	    <i class="fa fa-chevron-left"></i>
 	  </button>
 
       <span>{{month}}&nbsp;{{year}}</span>
-     
-      <button class="btn-next-month" {{^next}}disabled="disabled"{{/next}}> 
+
+      <button class="btn-next-month" {{^next}}disabled="disabled"{{/next}} data-month="+1">
 	    <i class="fa fa-chevron-right"></i>
 	  </button>
     </h2>
@@ -60,7 +60,7 @@
           {{/otherMonth}}
 
           {{^otherMonth}}
-          <td class="day {{classes}} {{#disabled}}disabled{{/disabled}}" data-value="{{value}}">
+          <td class="day {{#disabled}}disabled{{/disabled}}" data-timestamp="{{timestamp}}">
           {{#selected}} <b class="label label-info">{{day}}</b> {{/selected}}
           {{^selected}} {{day}} {{/selected}}
           </td>

@@ -34,7 +34,7 @@ h1 {
   background:    #A0D468;
 }
 
-#MainDemo .calendar-header {
+#MainDemo .calendar > h2 {
   font-size:   2.5em;
   background:  #97CE7F;
   height:      2em;
@@ -42,20 +42,20 @@ h1 {
   margin:      0;
 }
 
-#MainDemo .calendar-header > .btn-next-month,
-#MainDemo .calendar-header > .btn-prev-month {
+#MainDemo .calendar > h2 > .btn-next-month,
+#MainDemo .calendar > h2 > .btn-prev-month {
   background:  #97CE7F;
   color:       #f6ffd5;
   border:      none;
   line-height: 1.8em;
 }
 
-#MainDemo .calendar-header > .btn-prev-month {
+#MainDemo .calendar > h2 > .btn-prev-month {
   margin-left: 1em;
   float: left;
 }
 
-#MainDemo .calendar-header > .btn-next-month {
+#MainDemo .calendar > h2 > .btn-next-month {
   margin-right: 1em;
   float: right;
 }
@@ -89,7 +89,7 @@ h1 {
 }
 
 #MainDemo .calendar > table .day:hover {
-  color:      #FFF; 
+  color:      #FFF;
 }
 
 #MainDemo .calendar-actions {
@@ -138,7 +138,7 @@ h1 {
     width:  100%;
 	height: 17em;
   }
-  #MainDemo .calendar-header,
+  #MainDemo .calendar > h2,
   #MainDemo .calendar table {
 	font-size: 1em;
   }

@@ -1,12 +1,12 @@
 /**
  *  Simple Calendar View
- *  This is created as a lightweight jQuery-UI Datepicker replacement
+ *  This is created as a lightweight calendar widget
  *
  *  Minimal template:
  *        <div><!-- root element -->
- *          <button class=\"btn-prev-month\">&lt;</button>
+ *          <button data-month=\"-1\">&lt;</button>
  *          <span>{{month}} &nbsp; {{year}}</span>
- *          <button class=\"btn-next-month\">&gt;</button>
+ *          <button data-month=\"+1\">&gt;</button>
  *          <br>
  *          <table>
  *            <thead>
@@ -20,7 +20,8 @@
  *            <tr>
  *              <th>{{num}}</th>
  *              {{#days}}
- *              <td class=\"day {{classes}} {{#disabled}}disabled{{/disabled}}\" data-value="{{value}}">
+ *              <td class=\"{{#otherMonth}}other-month{{/otherMonth}} {{#disabled}}disabled{{/disabled}}\"
+ *                  data-timestamp="{{timestamp}}">
  *               {{#selected}}<b>{{day}}</b>{{/selected}}
  *               {{^selected}}{{day}}{{/selected}}
  *              </td>
@@ -39,18 +40,18 @@
   "use strict";
 
   /**
-   * Polyfill for Internet Explorer 9 and 10 
+   * Polyfill for Internet Explorer 9 and 10
    * https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent
    */
   if (typeof CustomEvent !== "function") {
-	var CustomEvent = function CustomEvent ( event, params ) {
-	  var evt = document.createEvent( 'CustomEvent' );
-	  params = params || { bubbles: false, cancelable: false, detail: undefined };
-	  evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
-	  return evt;
-	};
-	CustomEvent.prototype = window.CustomEvent.prototype;
-	window.CustomEvent = CustomEvent;
+    var CustomEvent = function CustomEvent(event, params) {
+      var evt = document.createEvent('CustomEvent');
+      params = params || {bubbles: false, cancelable: false, detail: undefined};
+      evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+      return evt;
+    };
+    CustomEvent.prototype = window.CustomEvent.prototype;
+    window.CustomEvent = CustomEvent;
   }
 
   /**
@@ -68,22 +69,9 @@
     this.model = this.options.model || new CalendarModel();
     this.el    = this.options.el    || document.createElement("div");
 
-    // Delegate events
+    // Delegate click events
     this.el.addEventListener("click", function (e) {
-	  var target = e.target;
-	  while (target && target !== Me.el) {
-        if (/btn-next-month/.test(target.className)) {
-		  return Me.onNextMonth(e);
-		}
-		if (/btn-prev-month/.test(target.className)) {
-		  return Me.onPrevMonth(e);
-		}
-		if (/day/.test(target.className)) {
-		  return Me.onSelectDay(e);
-	    }
-		target = target.parentNode;
-	  }
-      return false;
+      return Me.onClick(e);
     });
   }
 
@@ -92,7 +80,7 @@
      * Options
      */
     defaults: {
-      template: '<button class="btn-prev-month">&lt;</button><span>{{month}} &nbsp; {{year}}</span><button class="btn-next-month">&gt;</button><br><table><thead><tr><th>{{weekNum}}</th>{{#daysOfTheWeek}}<th>{{.}}</th>{{/daysOfTheWeek}}</tr></thead><tbody>{{#weeks}}<tr><th>{{num}}</th>{{#days}}<td class="day {{classes}} {{#disabled}}disabled{{/disabled}}" data-value="{{value}}">{{#selected}}<b>{{day}}</b>{{/selected}}{{^selected}}{{day}}{{/selected}}</td>{{/days}}</tr>{{/weeks}}</tbody></table>',
+      template: '<button data-month="-1">&lt;</button><span>{{month}} &nbsp; {{year}}</span><button data-month="+1">&gt;</button><br><table><thead><tr><th>{{weekNum}}</th>{{#daysOfTheWeek}}<th>{{.}}</th>{{/daysOfTheWeek}}</tr></thead><tbody>{{#weeks}}<tr><th>{{num}}</th>{{#days}}<td class="{{#otherMonth}}other-month{{/otherMonth}} {{#disabled}}disabled{{/disabled}}" data-timestamp="{{timestamp}}">{{#selected}}<b>{{day}}</b>{{/selected}}{{^selected}}{{day}}{{/selected}}</td>{{/days}}</tr>{{/weeks}}</tbody></table>',
       nameOfTheMonths: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
       daysOfTheWeek:   ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
     },
@@ -110,19 +98,48 @@
     },
 
     /**
-     * Go to next month
+     * Delegates click events
      */
-    onNextMonth: function (event) {
+    onClick: function (event) {
+      var target = event.target;
+
+      // Bubble the elements if necessary
+      while (target && target !== this.el) {
+        // Move to another month
+        if (target.hasAttribute("data-month")) {
+          return this.onChangeMonth(event, target);
+        }
+        // Move to another year
+        if (target.hasAttribute("data-year")) {
+          return this.onChangeYear(event, target);
+        }
+        // Go to selected timestamp
+        if (target.hasAttribute("data-timestamp")) {
+          return this.onChangeDate(event, target);
+        }
+
+        target = target.parentNode;
+      }
+      return false;
+    },
+
+    /**
+     * Move month
+     */
+    onChangeMonth: function (event, target) {
       event.preventDefault();
-      this.model.nextMonth();
+      var num = target.getAttribute("data-month");
+      this.model.moveMonth(parseInt(num, 10));
       this.render();
     },
+
     /**
-     * Go to previous month
+     * Move year
      */
-    onPrevMonth: function (event) {
+    onChangeYear: function (event, target) {
       event.preventDefault();
-      this.model.prevMonth();
+      var num = target.getAttribute("data-year");
+      this.model.moveYear(parseInt(num, 10));
       this.render();
     },
 
@@ -133,18 +150,17 @@
      *
      * @returns false, triggers "dayselected" event in the view
      */
-    onSelectDay: function (event) {
-      var date, evt;
+    onChangeDate: function (event, target) {
+      var date, evt, dtl;
       event.preventDefault();
-      if (/disabled/.test(event.target.className)) {
+      if (/disabled/.test(target.className) || target.hasAttribute("disabled")) {
         return false;
       }
-      date = new Date(+event.target.getAttribute("data-value"));
+      date = new Date(parseInt(target.getAttribute("data-timestamp"), 10));
       this.model.option("selected", date);
       // Trigger a custom event
-      evt = new CustomEvent("dayselected", {"date": date, "model": this.model});
-      evt.date  = date;
-      evt.model = this.model;
+      dtl = {"date": date, "model": this.model};
+      evt = new CustomEvent("dateselected", {bubbles: true, cancelable: true, detail: dtl});
       this.el.dispatchEvent(evt);
       this.render();
       return false;

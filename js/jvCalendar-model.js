@@ -51,52 +51,43 @@
     },
 
     /**
-     * Move cursor to next month
+     * Move cursor to next {num} months
+     * @param num number The number of months to move
      */
-    nextMonth: function () {
-      if (!this.canNextMonth()) {
+    moveMonth: function (num) {
+      if (num > 0 && !this.canNextMonth(num)) {
+        return false;
+      }
+      if (num < 0 && !this.canPrevMonth(num)) {
         return false;
       }
 
       // go to the beginning of next month
-      this._cursor = new Date(this._cursor.getFullYear(), this._cursor.getMonth() + 1, 1);
-      return true;
-    },
-
-    /**
-     * Move cursor to prev month
-     */
-    prevMonth: function () {
-      if (!this.canPrevMonth()) {
-        return false;
-      }
-
-      // go to begining of previous month
-      this._cursor = new Date(this._cursor.getFullYear(), this._cursor.getMonth() - 1, 1);
+      this._cursor = new Date(this._cursor.getFullYear(), this._cursor.getMonth() + num, 1);
       return true;
     },
 
     /**
      *  Verify if we can go to prev month
      */
-    canPrevMonth: function () {
+    canPrevMonth: function (num) {
       if (!(this._minDate instanceof Date)) {
         return true;
       }
       // go to end of previous month, which is one minute back from beginning of current month
-      var cursor  = new Date(this._cursor.getFullYear(), this._cursor.getMonth(), 1, 0, -1);
+      var cursor  = new Date(this._cursor.getFullYear(), this._cursor.getMonth() - num + 1, 1, 0, -1);
       return (cursor >= this._minDate);
     },
 
     /**
      *  Verify if we can go to next month
      */
-    canNextMonth: function () {
+    canNextMonth: function (num) {
       if (!(this._maxDate instanceof Date)) {
         return true;
       }
       // go to the beginning of next month
-      var cursor = new Date(this._cursor.getFullYear(), this._cursor.getMonth() + 1, 1);
+      var cursor = new Date(this._cursor.getFullYear(), this._cursor.getMonth() + num, 1);
       // Check if a max date is set
       return (cursor <= this._maxDate);
     },
@@ -196,8 +187,7 @@
      * @returns object
      */
     _getDayInfo: function (dt) {
-      var cls        = [],
-        sel          = this._selected, // The selected date
+      var sel        = this._selected, // The selected date
         cal          = this._cursor,   // The current calendar position
         isSelected   = false,
         isOtherMonth = false,
@@ -209,24 +199,21 @@
           dt.getMonth()    === sel.getMonth() &&
           dt.getFullYear() === sel.getFullYear()
           ) {
-        cls.push('selected');
         isSelected = true;
       }
 
       if (dt.getFullYear() !== cal.getFullYear() ||
           dt.getMonth()    !== cal.getMonth()
           ) {
-        cls.push('other-month');
         isOtherMonth = true;
       }
 
       return {
-        classes:    cls.join(' '),
         otherMonth: isOtherMonth,
         disabled:   isDisabled,
-        day:        dt.getDate(),
         selected:   isSelected,
-        value:      dt.getTime()
+        day:        dt.getDate(),
+        timestamp:  dt.getTime()
       };
     },
 
@@ -240,7 +227,7 @@
     _getWeekInfo: function (weekDays) {
       var thursday = 4 - this.options.firstDay;
       return {
-        num:  this.calculateWeek(new Date(weekDays[thursday].value)),
+        num:  this.calculateWeek(new Date(weekDays[thursday].timestamp)),
         days: weekDays
       };
     },
