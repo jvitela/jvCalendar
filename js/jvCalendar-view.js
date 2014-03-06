@@ -50,7 +50,7 @@
       evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
       return evt;
     };
-    CustomEvent.prototype = window.CustomEvent.prototype;
+    CustomEvent.prototype = window.CustomEvent? window.CustomEvent.prototype : {};
     window.CustomEvent = CustomEvent;
   }
 
