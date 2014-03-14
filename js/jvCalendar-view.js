@@ -105,17 +105,21 @@
 
       // Bubble the elements if necessary
       while (target && target !== this.el) {
+        // add a custom delegateTarget property to the event object 
+        // So that event handlers can access the right target
+        event.delegateTarget = target;
+
         // Move to another month
         if (target.hasAttribute("data-month")) {
-          return this.onChangeMonth(event, target);
+          return this.onChangeMonth(event);
         }
         // Move to another year
         if (target.hasAttribute("data-year")) {
-          return this.onChangeYear(event, target);
+          return this.onChangeYear(event);
         }
         // Go to selected timestamp
         if (target.hasAttribute("data-timestamp")) {
-          return this.onChangeDate(event, target);
+          return this.onChangeDate(event);
         }
 
         target = target.parentNode;
@@ -126,9 +130,9 @@
     /**
      * Move month
      */
-    onChangeMonth: function (event, target) {
+    onChangeMonth: function (event) {
       event.preventDefault();
-      var num = target.getAttribute("data-month");
+      var num = event.delegateTarget.getAttribute("data-month");
       this.model.moveMonth(parseInt(num, 10));
       this.render();
     },
@@ -136,9 +140,9 @@
     /**
      * Move year
      */
-    onChangeYear: function (event, target) {
+    onChangeYear: function (event) {
       event.preventDefault();
-      var num = target.getAttribute("data-year");
+      var num = event.delegateTarget.getAttribute("data-year");
       this.model.moveYear(parseInt(num, 10));
       this.render();
     },
@@ -150,8 +154,8 @@
      *
      * @returns false, triggers "dayselected" event in the view
      */
-    onChangeDate: function (event, target) {
-      var date, evt, dtl;
+    onChangeDate: function (event) {
+      var date, evt, dtl, target = event.delegateTarget;
       event.preventDefault();
       if (/disabled/.test(target.className) || target.hasAttribute("disabled")) {
         return false;
