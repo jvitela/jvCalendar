@@ -1,10 +1,11 @@
 body {
-  font-family: 'Gafata', sans-serif;
-  background: #414141;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 700;
+  background:  #414141;
 }
 
 h1 {
-  font-weight: normal;
+  /*font-weight: 700;*/
   font-size:   5em;
   margin: 0;
 }
@@ -67,6 +68,7 @@ h1 {
 }
 
 #MainDemo .calendar > table > thead th {
+  /*font-weight: 700;*/
   color:      #bec8b7;
   background: #93ac93;
   padding:    0.5em;
@@ -74,6 +76,7 @@ h1 {
 
 #MainDemo .calendar > table .other-month,
 #MainDemo .calendar > table > tbody th {
+  /*font-weight: 300;*/
   color: #93ac93;
 }
 
@@ -83,7 +86,7 @@ h1 {
 }
 
 #MainDemo .calendar > table .day.selected {
-  font-weight: bold;
+  /*font-weight: 700;*/
   cursor:      pointer;
   background:  #97CE7F;
 }
@@ -153,7 +156,7 @@ h1 {
   }
   #MainDemo .calendar table tbody th {
 	font-size: 	 0.7em;
-	font-weight: normal;
+	/*font-weight: 300;*/
   }
 }
 
