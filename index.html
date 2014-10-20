@@ -19,14 +19,14 @@
   <link rel="stylesheet" href="css/font-awesome.min.css">
   <link rel="stylesheet" href="css/jvcalendar.css">
 
-  <script src="js/vendor/mustache.js" type="text/javascript"></script>
+  <script src="js/vendor/mustache.js"   type="text/javascript"></script>
   <script src="js/jvCalendar-model.js"  type="text/javascript"></script>
   <script src="js/jvCalendar-view.js"   type="text/javascript"></script>
   <script src="js/main.js"   type="text/javascript"></script>
 </head>
 <body>
   <section id="Title">
-   <h1>Calendar <i class="fa fa-calendar"></i></h1>
+   <h1>Calendar <img src="cal.svg"/></h1>
   </section>
 
   <section id="MainDemo">
@@ -58,7 +58,7 @@
     <table>
     <thead>
       <tr>
-        <th>{{weekNum}}</th>
+        <th>WK</th>
         {{#daysOfTheWeek}}<th>{{.}}</th>{{/daysOfTheWeek}}
       </tr>
     </thead>

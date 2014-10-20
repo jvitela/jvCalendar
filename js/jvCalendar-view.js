@@ -59,15 +59,20 @@
    */
   function CalendarView(opts) {
     var key, Me = this;
-    this.options = opts || {};
-    for (key in this.defaults) {
-      if (this.defaults.hasOwnProperty(key) && !this.options.hasOwnProperty(key)) {
-        this.options[key] = this.defaults[key];
+    
+
+    this.template        = '<button data-month="-1">&lt;</button><span>{{month}} &nbsp; {{year}}</span><button data-month="+1">&gt;</button><br><table><thead><tr><th>{{weekNum}}</th>{{#daysOfTheWeek}}<th>{{.}}</th>{{/daysOfTheWeek}}</tr></thead><tbody>{{#weeks}}<tr><th>{{num}}</th>{{#days}}<td class="{{#otherMonth}}other-month{{/otherMonth}} {{#disabled}}disabled{{/disabled}}" data-timestamp="{{timestamp}}">{{#selected}}<b>{{day}}</b>{{/selected}}{{^selected}}{{day}}{{/selected}}</td>{{/days}}</tr>{{/weeks}}</tbody></table>';
+    this.nameOfTheMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    this.daysOfTheWeek   = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+
+    for (key in opts) {
+      if (this.hasOwnProperty(key)) {
+        this[key] = opts[key];
       }
     }
 
-    this.model = this.options.model || new CalendarModel();
-    this.el    = this.options.el    || document.createElement("div");
+    this.model = opts.model || new Calendar();
+    this.el    = opts.el    || document.createElement("div");
 
     // Delegate click events
     this.el.addEventListener("click", function (e) {
@@ -76,14 +81,6 @@
   }
 
   CalendarView.prototype = {
-    /**
-     * Options
-     */
-    defaults: {
-      template: '<button data-month="-1">&lt;</button><span>{{month}} &nbsp; {{year}}</span><button data-month="+1">&gt;</button><br><table><thead><tr><th>{{weekNum}}</th>{{#daysOfTheWeek}}<th>{{.}}</th>{{/daysOfTheWeek}}</tr></thead><tbody>{{#weeks}}<tr><th>{{num}}</th>{{#days}}<td class="{{#otherMonth}}other-month{{/otherMonth}} {{#disabled}}disabled{{/disabled}}" data-timestamp="{{timestamp}}">{{#selected}}<b>{{day}}</b>{{/selected}}{{^selected}}{{day}}{{/selected}}</td>{{/days}}</tr>{{/weeks}}</tbody></table>',
-      nameOfTheMonths: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-      daysOfTheWeek:   ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
-    },
 
     /**
      * Renders the calendar
@@ -91,9 +88,11 @@
      */
     render: function () {
       var clndr           = this.model.build();
-      clndr.month         = this.options.nameOfTheMonths[clndr.month];
-      clndr.daysOfTheWeek = this.options.daysOfTheWeek;
-      this.el.innerHTML   = Mustache.render(this.options.template, clndr);
+      clndr.month         = this.nameOfTheMonths[clndr.month];
+      clndr.daysOfTheWeek = this.daysOfTheWeek;
+      this.el.innerHTML   = Mustache.render( this.template, clndr);
+      
+      //console.log( clndr);
       return this;
     },
 
@@ -113,10 +112,12 @@
         if (target.hasAttribute("data-month")) {
           return this.onChangeMonth(event);
         }
+
         // Move to another year
         if (target.hasAttribute("data-year")) {
           return this.onChangeYear(event);
         }
+
         // Go to selected timestamp
         if (target.hasAttribute("data-timestamp")) {
           return this.onChangeDate(event);
@@ -161,7 +162,7 @@
         return false;
       }
       date = new Date(parseInt(target.getAttribute("data-timestamp"), 10));
-      this.model.option("selected", date);
+      this.model.selected = date;
       // Trigger a custom event
       dtl = {"date": date, "model": this.model};
       evt = new CustomEvent("dateselected", {bubbles: true, cancelable: true, detail: dtl});
