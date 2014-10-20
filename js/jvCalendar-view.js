@@ -89,7 +89,7 @@
     render: function () {
       var clndr           = this.model.build();
       clndr.month         = this.nameOfTheMonths[clndr.month];
-      clndr.daysOfTheWeek = this.daysOfTheWeek;
+      clndr.daysOfTheWeek = this.model.firstDay ? this.rotateArray( this.daysOfTheWeek, this.model.firstDay) : this.daysOfTheWeek;
       this.el.innerHTML   = Mustache.render( this.template, clndr);
       
       //console.log( clndr);
@@ -170,7 +170,18 @@
       this.render();
       return false;
     },
+	
+	rotateArray: function(src, count) {
+		var unshift = Array.prototype.unshift,
+			splice  = Array.prototype.splice,
+			len     = src.length >>> 0,
+			arr     = src.slice();
+		count   = count >> 0;
 
+		unshift.apply(arr, splice.call(arr, count % len, len));
+		return arr;
+	},
+	
     /**
      * destroy
      */

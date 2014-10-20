@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function() {
     var calendar = new CalendarView({
       el:       document.getElementById("Calendar"),
       //model:    new Calendar({ numMonths: 12 }),
-      model:    new Calendar({ numWeeks: 6 }),
+      model:    new Calendar({ numWeeks: 6, firstDay: 1 }),
       template: document.getElementById("CalendarTemplate").innerHTML
     });
 
