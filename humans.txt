@@ -3,7 +3,7 @@
 
 # TEAM
 
-    <name> -- <role> -- <twitter>
+    Jonathan Vitela -- Admin -- https://twitter.com/j_vitel
 
 # THANKS
 

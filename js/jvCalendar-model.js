@@ -12,28 +12,28 @@
   /**
    * Constructor
    */
-  function CalendarModel(opts) {
+  function Calendar(opts) {
     var key;
-    this.options = opts || {};
-    for (key in this.defaults) {
-      if (this.defaults.hasOwnProperty(key) && !this.options.hasOwnProperty(key)) {
-        this.options[key] = this.defaults[key];
+
+    this.cursor     = false;
+    this.selected   = false;
+    this.minDate    = false;
+    this.maxDate    = false;
+    this.firstDay   = 0;         // Set the first day of the week: Sunday is 0, Monday is 1, etc.
+    this.numMonths  = 1;
+    this.numWeeks   = "auto";     // Number of weeks to display per month
+    
+    opts = opts || {};
+    for (key in opts) {
+      if (this.hasOwnProperty(key)) {
+        this[key] = opts[key];
       }
     }
-    this._initDates();
+
+    this.initialize();
   }
 
-  CalendarModel.prototype = {
-    /**
-     * Building Attributes
-     */
-    defaults: {
-      selected: new Date(),
-      minDate:  false,
-      maxDate:  false,
-      firstDay: 0,          // Set the first day of the week: Sunday is 0, Monday is 1, etc.
-      numWeeks: "auto"      // Number of weeks to display per month
-    },
+  Calendar.prototype = {
 
     /**
      * Generate template data
@@ -42,11 +42,11 @@
      */
     build: function () {
       return {
-        prev:  this.canPrevMonth(),
-        next:  this.canNextMonth(),
-        month: this._cursor.getMonth(),
-        year:  this._cursor.getFullYear(),
-        weeks: this._getCalendarDaysByWeek()
+        prev:  this.canPrevMonth(1),
+        next:  this.canNextMonth(1),
+        month: this.cursor.getMonth(),
+        year:  this.cursor.getFullYear(),
+        weeks: this.getCalendarDaysByWeek()
       };
     },
 
@@ -63,7 +63,7 @@
       }
 
       // go to the beginning of next month
-      this._cursor = new Date(this._cursor.getFullYear(), this._cursor.getMonth() + num, 1);
+      this.cursor = new Date( this.cursor.getFullYear(), this.cursor.getMonth() + num, 1);
       return true;
     },
 
@@ -71,25 +71,25 @@
      *  Verify if we can go to prev month
      */
     canPrevMonth: function (num) {
-      if (!(this._minDate instanceof Date)) {
+      if (!(this.minDate instanceof Date)) {
         return true;
       }
       // go to end of previous month, which is one minute back from beginning of current month
-      var cursor  = new Date(this._cursor.getFullYear(), this._cursor.getMonth() - num + 1, 1, 0, -1);
-      return (cursor >= this._minDate);
+      var cursor  = new Date(this.cursor.getFullYear(), this.cursor.getMonth() - num + 1, 1, 0, -1);
+      return (cursor >= this.minDate);
     },
 
     /**
      *  Verify if we can go to next month
      */
     canNextMonth: function (num) {
-      if (!(this._maxDate instanceof Date)) {
+      if (!(this.maxDate instanceof Date)) {
         return true;
       }
       // go to the beginning of next month
-      var cursor = new Date(this._cursor.getFullYear(), this._cursor.getMonth() + num, 1);
+      var cursor = new Date(this.cursor.getFullYear(), this.cursor.getMonth() + num, 1);
       // Check if a max date is set
-      return (cursor <= this._maxDate);
+      return (cursor <= this.maxDate);
     },
 
     /**
@@ -105,7 +105,7 @@
       }
 
       // go to the beginning of next month
-      this._cursor = new Date(this._cursor.getFullYear() + num, this._cursor.getMonth(), 1);
+      this.cursor = new Date(this.cursor.getFullYear() + num, this.cursor.getMonth(), 1);
       return true;
     },
 
@@ -113,47 +113,70 @@
      *  Verify if we can go to prev year
      */
     canPrevYear: function (num) {
-      if (!(this._minDate instanceof Date)) {
+      if (!(this.minDate instanceof Date)) {
         return true;
       }
       // go to end of previous month, which is one minute back from beginning of current month
-      var cursor  = new Date(this._cursor.getFullYear() - num + 1, this._cursor.getMonth(), 1, 0, -1);
-      return (cursor >= this._minDate);
+      var cursor  = new Date(this.cursor.getFullYear() - num + 1, this.cursor.getMonth(), 1, 0, -1);
+      return (cursor >= this.minDate);
     },
 
     /**
      *  Verify if we can go to next year
      */
     canNextYear: function (num) {
-      if (!(this._maxDate instanceof Date)) {
+      if (!(this.maxDate instanceof Date)) {
         return true;
       }
       // go to the beginning of next month
-      var cursor = new Date(this._cursor.getFullYear() + num, this._cursor.getMonth(), 1);
+      var cursor = new Date(this.cursor.getFullYear() + num, this.cursor.getMonth(), 1);
       // Check if a max date is set
-      return (cursor <= this._maxDate);
+      return (cursor <= this.maxDate);
     },
 
     /**
-     * set/get option value
+     * Moves cursor to the month of the selected day
      */
-    option: function (name, value) {
-      if (value === "undefined") {
-        return this.options[name];
+    moveToSelectedDate: function () {
+      if (this.selected instanceof Date) {
+        this.cursor = new Date(this.selected.getFullYear(), this.selected.getMonth(), 1);
+      }
+    },
+
+    /**
+     * sets the cursor position
+     */
+    setCursor: function () {
+      var today, selected, minDate, maxDate;
+
+      today = new Date();
+      today.setHours(0, 0, 0, 0);
+      selected = this.selected || today;
+      minDate  = this.minDate;
+      maxDate  = this.maxDate;
+
+      if( minDate instanceof Date) {
+        selected = (minDate > selected) ? minDate : selected;
       }
 
-      this.options[name] = value;
-      this._initDates();
-      return this;
+      if( maxDate instanceof Date) {
+        selected = (maxDate < selected) ? maxDate : selected;
+      }
+
+      if (this.selected) {
+        this.selected = selected;
+      }
+
+      this.cursor   = new Date(selected.getFullYear(), selected.getMonth(), 1);
     },
 
     /**
      * Initializes date values
      */
-    _initDates: function () {
-      var selected = this.options.selected,
-        minDate    = this.options.minDate,
-        maxDate    = this.options.maxDate;
+    initialize: function () {
+      var selected = this.selected || new Date(),
+        minDate    = this.minDate,
+        maxDate    = this.maxDate;
 
       if (minDate instanceof Date) {
         minDate  = (minDate < maxDate)  ? minDate : maxDate;
@@ -165,36 +188,44 @@
         selected = (maxDate < selected) ? maxDate : selected;
       }
 
-      this._cursor   = new Date(selected.getFullYear(), selected.getMonth(),  1);
-      this._selected = new Date(selected.getTime());
-      this._minDate  = minDate && new Date(minDate.getTime());
-      this._maxDate  = maxDate && new Date(maxDate.getTime());
+      if (this.selected) {
+        this.selected = new Date(selected.getTime());
+      }
+
+      this.cursor   = new Date(selected.getFullYear(), selected.getMonth(),  1);
+      this.minDate  = minDate && new Date(minDate.getTime());
+      this.maxDate  = maxDate && new Date(maxDate.getTime());
     },
 
     /**
      * Return array of days for the template
      */
-    _getCalendarDays: function () {
+    getCalendarDays: function () {
       // Get first day of current month
       var cur, i,
-        dt       = new Date(this._cursor.getTime()),
-        offsetDays = dt.getDay() - this.options.firstDay, // Get day of week
+        dt       = new Date(this.cursor.getTime()),
+        offsetDays = dt.getDay() - this.firstDay, // Get day of week
         days       = [],
-        numDays    = this.options.numWeeks;
+        numDays    = this.numWeeks;
 
       // Get number of days to display
       if (typeof numDays === "number" && numDays > 0) {
-        numDays = this.options.numWeeks * 7;
+        numDays = this.numWeeks * 7;
       } else {
-        cur = new Date(this._cursor.getFullYear(), this._cursor.getMonth() + 1, 0);
-        numDays = cur.getDate() + offsetDays + (6 - cur.getDay());
+        numDays = 0;
+        for( i = 1; i <= this.numMonths; ++i) {
+          // get last day of the mont
+          cur = new Date(this.cursor.getFullYear(), this.cursor.getMonth() + i, 0);
+          numDays += cur.getDate();
+        }
+        numDays += offsetDays + (6 - cur.getDay());
       }
 
       // set initial date
       dt.setDate(1 - offsetDays);
       // Calculate each day
       for (i = 0; i < numDays; ++i) {
-        days.push(this._getDayInfo(dt));
+        days.push(this.getDayInfo(dt));
         dt.setDate(dt.getDate() + 1);
       }
       return days;
@@ -202,20 +233,20 @@
 
     /**
      * Get Calendar days grouped by weeks
-     * calls _getCalendarDays
+     * calls getCalendarDays
      */
-    _getCalendarDaysByWeek: function () {
+    getCalendarDaysByWeek: function () {
       // Group days by week
       var i         = 0,
         weeks       = [],
-        calDays     = this._getCalendarDays(),
+        calDays     = this.getCalendarDays(),
         daysInWeek  = 7,
         numWeeks    = calDays.length / daysInWeek,
         weekDays;
 
       while (weeks.length < numWeeks) {
         weekDays = calDays.slice(i, i + daysInWeek);
-        weeks.push(this._getWeekInfo(weekDays));
+        weeks.push(this.getWeekInfo(weekDays));
         i += daysInWeek;
       }
       return weeks;
@@ -228,16 +259,18 @@
      *
      * @returns object
      */
-    _getDayInfo: function (dt) {
-      var sel        = this._selected, // The selected date
-        cal          = this._cursor,   // The current calendar position
+    getDayInfo: function (dt) {
+      var sel        = this.selected, // The selected date
+        cal          = this.cursor,   // The current calendar position
         isSelected   = false,
         isOtherMonth = false,
-        minDate      = this._minDate,
-        maxDate      = this._maxDate,
-        isDisabled   = ((minDate && dt < minDate) || (maxDate && dt > maxDate));
+        minDate      = this.minDate,
+        maxDate      = this.maxDate,
+        isDisabled   = ((minDate && dt < minDate) || (maxDate && dt > maxDate)),
+        isWeekend    = (dt.getDay()==0 || dt.getDay()==6);
 
-      if (dt.getDate()     === sel.getDate()  &&
+      if (sel &&
+          dt.getDate()     === sel.getDate()  &&
           dt.getMonth()    === sel.getMonth() &&
           dt.getFullYear() === sel.getFullYear()
           ) {
@@ -251,6 +284,7 @@
       }
 
       return {
+        weekend:    isWeekend,
         otherMonth: isOtherMonth,
         disabled:   isDisabled,
         selected:   isSelected,
@@ -266,8 +300,8 @@
      *
      * @returns object
      */
-    _getWeekInfo: function (weekDays) {
-      var thursday = 4 - this.options.firstDay;
+    getWeekInfo: function (weekDays) {
+      var thursday = 4 - this.firstDay;
       return {
         num:  this.calculateWeek(new Date(weekDays[thursday].timestamp)),
         days: weekDays
@@ -297,5 +331,5 @@
 
   };
 
-  window.CalendarModel = CalendarModel;
+  window.Calendar = Calendar;
 }(window));
