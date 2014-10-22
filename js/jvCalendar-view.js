@@ -59,7 +59,7 @@
    */
   function CalendarView(opts) {
     var key, Me = this;
-    
+
 
     this.template        = '<button data-month="-1">&lt;</button><span>{{month}} &nbsp; {{year}}</span><button data-month="+1">&gt;</button><br><table><thead><tr><th>{{weekNum}}</th>{{#daysOfTheWeek}}<th>{{.}}</th>{{/daysOfTheWeek}}</tr></thead><tbody>{{#weeks}}<tr><th>{{num}}</th>{{#days}}<td class="{{#otherMonth}}other-month{{/otherMonth}} {{#disabled}}disabled{{/disabled}}" data-timestamp="{{timestamp}}">{{#selected}}<b>{{day}}</b>{{/selected}}{{^selected}}{{day}}{{/selected}}</td>{{/days}}</tr>{{/weeks}}</tbody></table>';
     this.nameOfTheMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -89,10 +89,9 @@
     render: function () {
       var clndr           = this.model.build();
       clndr.month         = this.nameOfTheMonths[clndr.month];
-      clndr.daysOfTheWeek = this.daysOfTheWeek;
+      clndr.daysOfTheWeek = this.model.firstDay ? this.rotateArray( this.daysOfTheWeek, this.model.firstDay) : this.daysOfTheWeek;
       this.el.innerHTML   = Mustache.render( this.template, clndr);
-      
-      console.log( clndr);
+      //console.log( clndr);
       return this;
     },
 
@@ -104,7 +103,7 @@
 
       // Bubble the elements if necessary
       while (target && target !== this.el) {
-        // add a custom delegateTarget property to the event object 
+        // add a custom delegateTarget property to the event object
         // So that event handlers can access the right target
         event.delegateTarget = target;
 
@@ -170,6 +169,17 @@
       this.render();
       return false;
     },
+
+	rotateArray: function(src, count) {
+		var unshift = Array.prototype.unshift,
+			splice  = Array.prototype.splice,
+			len     = src.length >>> 0,
+			arr     = src.slice();
+		count   = count >> 0;
+
+		unshift.apply(arr, splice.call(arr, count % len, len));
+		return arr;
+	},
 
     /**
      * destroy
