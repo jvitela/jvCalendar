@@ -1,87 +1,62 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title> Javascript Calendar</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <meta name="description" content="Javascript (Vanilla) Calendar">
-  <meta name="viewport" content="width=device-width">
+<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=description><meta name=viewport content="width=device-width, initial-scale=1"><title></title><meta name=mobile-web-app-capable content=yes><link rel=icon sizes=192x192 href=images/touch/chrome-touch-icon-192x192.png><meta name=apple-mobile-web-app-capable content=yes><meta name=apple-mobile-web-app-status-bar-style content=black><meta name=apple-mobile-web-app-title content="Web Starter Kit"><link rel=apple-touch-icon-precomposed href=apple-touch-icon-precomposed.png><meta name=msapplication-TileImage content=images/touch/ms-touch-icon-144x144-precomposed.png><meta name=msapplication-TileColor content=#3372DF><link rel=stylesheet href=styles/main.css></head><body><header class="app-bar promote-layer"><div class=app-bar-container><button class=menu><i class="icon icon-menu"></i></button><h1 class=logo><strong>Calendar.</strong> <small>A lightweight calendar builder</small> <i class="icon icon-calendar"></i></h1><section class=app-bar-actions></section></div></header><nav class="navdrawer-container promote-layer"><h4>Navigation</h4><ul><li><a href=#About>About</a></li><li><a href=#GetStarted>Get Started</a></li><li><a href=#Cofiguration>Cofiguration</a></li></ul></nav><main><article class=calendar id=Calendar></article><aside class=calendar-actions><div class=g--half><h3 id=Selection>No day selected</h3></div><div class="g--half g--last"><button id=Today type=button class="button button--secondary">Today</button></div></aside><article class=styleguide__editorial-header id=About><h1 class="tag editorial-header__title">About</h1><h2 class=editorial-header__subtitle>What is this about?</h2><p class="editorial-header__excerpt g-wide--pull-3"></p><p class=g-wide--pull-3>Calendar is a javascript component for creating calendars.<br>Unlike most calendar plugins, this one doesn't generate markup, it just generates the calendar data as a javascript object.<br>You need to provide a view (function, backbone view, angular directive, etc) and render the data in whichever way you want.</p><p>This is not ment to be an out-of-the-box solution, instead the goal is to provide a solid fundation where to build a calendar widget.<br>The Calendar builder is build using pure javascript so you don't need to depend on any 3rd party libraries.</p></article><article class=styleguide__editorial-header id=GetStarted><h1 class="tag editorial-header__title">Get Started</h1><h2 class=editorial-header__subtitle>Here's How You Use It</h2><p class="editorial-header__excerpt g-wide--pull-3">Just create a new Calendar object and call <em>build</em></p><pre>
+         <code class=language-javascript>
+var model = new Calendar();
+clndr = model.build();
+          </code>
+        </pre><p class=g-wide--pull-3>This will generate the following object:</p><pre>
+          <code class=language-javascript>
+/* clndr = */ { 
+  prev: true,  // Can be moved to the previous month?
+  next: true,  // Can be moved to the next month?
+  month: 10,   // Current month number (1 to 12)
+  year: 2014,  // Year
+  weeks: [     // Array of weeks
+    {
+      num: 44, // Number of the week in the year
+      days: [  // Array of days in this week (7)
+        {
+          day:        27, // day number of the month
+          wkDay:      1, // Day of the week [0-6]
+          disabled:   false, // Days outisde min-max limits are disabled
+          otherMonth: false,
+          selected:   false,
+          timestamp:  1414364400000,
+          weekend:    false // Sa or Su
+        },
+        ...
+      ]
+    },
+    ...
+  ], 
+}
+          </code>
+        </pre></article><article class=styleguide__editorial-header id=Cofiguration><h1 class="tag editorial-header__title">Cofiguration</h1><h2 class=editorial-header__subtitle>What about the configuration options?</h2><p class="editorial-header__excerpt g-wide--pull-3">Here they are.</p><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody><tr><td><strong>cursor</strong></td><td>Date</td><td>The starting page of the calendar, only month and year are taken into account</td></tr><tr><td><strong>selected</strong></td><td>Date</td><td>The selected date</td></tr><tr><td><strong>minDate</strong></td><td>Date</td><td>The minimum allowed date</td></tr><tr><td><strong>maxDate</strong></td><td>Date</td><td>The maximum allowed date</td></tr><tr><td><strong>firstDay</strong></td><td>Number</td><td>The starting day of the week, by default is 0=Sunday, you can change it to 1=Mon, 2=Tue, etc;</td></tr><tr><td><strong>numMonths</strong></td><td>Number</td><td>The number of months to generate, by default = 1</td></tr><tr><td><strong>numWeeks</strong></td><td>Number</td><td>Force each calendar page to have 'n' weeks, use 'auto' for dynamic calculation</td></tr><tr><td><strong>onDayInfo</strong></td><td>Function</td><td>Callback decorator to add extra info for a day.<pre>
+                <code class=language-javascript>
+function(dayData, date) {
+  dayData.newField = date.toString(); 
+}
+                </code>
+              </pre></td></tr><tr><td><strong>onWeekInfo</strong></td><td>Function</td><td>Callback decorator to add extra info for a week.<pre>
+                <code class=language-javascript>
+function(weekData) {
+  weekData.cloudy = false; 
+}
+                </code>
+              </pre></td></tr></tbody></table><p><strong>Example:</strong><br>Select the 25th of December.<br>Min date 1st Dec.<br>Max date 31st Dec.<br></p><pre>
+          <code class=language-javascript>
+var christmas = new Date();
+christmas.setMonth(11);
+christmas.setDate(25);
 
-  <!-- 
-    http://www.smashingmagazine.com/2014/03/12/taking-a-second-look-at-free-fonts/
-    http://www.google.com/fonts/specimen/Source+Sans+Pro
-    http://www.google.com/fonts/specimen/Playfair+Display
-    http://www.google.com/fonts/specimen/Merriweather 
-  -->
-  <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:700' rel='stylesheet' type='text/css'>
-  <link rel="stylesheet" href="css/normalize.min.css">
-  <link rel="stylesheet" href="css/font-awesome.min.css">
-  <link rel="stylesheet" href="css/jvcalendar.css">
+var decStart = new Date( christmas.getFullYear(), 11, 1);
+var decEnd   = new Date( christmas.getFullYear(), 11, 31);
 
-  <script src="js/vendor/mustache.js"   type="text/javascript"></script>
-  <script src="js/jvCalendar-model.js"  type="text/javascript"></script>
-  <script src="js/jvCalendar-view.js"   type="text/javascript"></script>
-  <script src="js/main.js"   type="text/javascript"></script>
-</head>
-<body>
-  <section id="Title">
-   <h1>Calendar <img src="cal.svg"/></h1>
-  </section>
-
-  <section id="MainDemo">
-    <div class="calendar" id="Calendar"></div>
-    <div class="calendar-actions">
-      <input type="text" id="Selection"/>
-      <button id="Today" type="button">Today</button>
-    </div>
-  </section>
-
-  <script type="text/Mustache" id="CalendarTemplate">
-    <h2>
-      <button class="btn" {{^prev}}disabled="disabled"{{/prev}} data-month="-1">
-       <i class="fa fa-chevron-left"></i>
-      </button>
-      <span class="month">{{month}}</span>
-      <button class="btn" {{^next}}disabled="disabled"{{/next}} data-month="+1">
-       <i class="fa fa-chevron-right"></i>
-      </button>
-      
-      <button class="btn" {{^prev}}disabled="disabled"{{/prev}} data-year="-1">
-       <i class="fa fa-chevron-left"></i>
-      </button>
-      <span class="year">{{year}}</span>
-      <button class="btn" {{^next}}disabled="disabled"{{/next}} data-year="+1">
-       <i class="fa fa-chevron-right"></i>
-      </button>
-    </h2>
-    <table>
-    <thead>
-      <tr>
-        <th>WK</th>
-        {{#daysOfTheWeek}}<th>{{.}}</th>{{/daysOfTheWeek}}
-      </tr>
-    </thead>
-    <tbody>
-      {{#weeks}}
-      <tr>
-        <th>{{num}}</th>
-        {{#days}}
-          {{#otherMonth}}
-          <td class="other-month">{{day}}</td>
-          {{/otherMonth}}
-
-          {{^otherMonth}}
-          <td class="day {{#disabled}}disabled{{/disabled}} {{#selected}}selected{{/selected}}" 
-              data-timestamp="{{timestamp}}">
-          {{day}}
-          </td>
-          {{/otherMonth}}
-        {{/days}}
-      </tr>
-      {{/weeks}}
-    </tbody>
-    </table>
-  </script>
-</body>
-</html>
+var clndr = new Calendar({
+  firstDay: 1,
+  numWeeks: 6, 
+  selected: christmas,
+  minDate:  decStart,
+  maxDate:  decEnd
+}),
+          </code>
+        </pre></article></main><script src=scripts/main.min.js></script><script type=text/Mustache id=CalendarTemplate><header> <div class="month-controls"> <button class="button--mini" {{^prev}}disabled="disabled"{{/prev}} data-month="-1"> <i class="icon icon-chevron-left"></i> </button> <h3 class="month">{{monthName}}</h3> <button class="button--mini g-wide--last" {{^next}}disabled="disabled"{{/next}} data-month="+1"> <i class="icon icon-chevron-right"></i> </button> </div> <div class="year-controls"> <button class="button--mini" {{^prev}}disabled="disabled"{{/prev}} data-year="-1"> <i class="icon icon-chevron-left"></i> </button> <h3 class="year">{{year}}</h3> <button class="button--mini" {{^next}}disabled="disabled"{{/next}} data-year="+1"> <i class="icon icon-chevron-right"></i> </button> </div> </header> <table> <colgroup> <col span="1"> <col span="1"> <col span="1"> <col span="1"> <col span="1"> <col span="1"> <col span="1"> <col span="1"> </colgroup> <thead> <tr> <th>WK</th> {{#daysOfTheWeek}}<th>{{.}}</th>{{/daysOfTheWeek}} </tr> </thead> <tbody> {{#weeks}} <tr> <th>{{num}}</th> {{#days}} {{#otherMonth}} <td class="other-month">{{day}}</td> {{/otherMonth}} {{^otherMonth}} <td class="day {{#disabled}}disabled{{/disabled}} {{#selected}}selected{{/selected}}" data-timestamp="{{timestamp}}" data-dayname="{{dayName}}"> {{day}} </td> {{/otherMonth}} {{/days}} </tr> {{/weeks}} </tbody> </table></script></body></html>
